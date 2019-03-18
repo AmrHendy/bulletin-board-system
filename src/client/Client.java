@@ -2,11 +2,16 @@ package client;
 
 import jdk.jshell.spi.ExecutionControl;
 
-public abstract class Client {
+public abstract class Client
+{
 
-    abstract public void read() throws ExecutionControl.NotImplementedException;
+	/* 01. attributes */
+	protected ExecutionStrategy strategy;
 
-    abstract public void write() throws ExecutionControl.NotImplementedException;
+	/* 02. methods */
+    abstract public String read() throws ExecutionControl.NotImplementedException;
+
+    abstract public void write(String news) throws ExecutionControl.NotImplementedException;
 
     abstract public void log();
 

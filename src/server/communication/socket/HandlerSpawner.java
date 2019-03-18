@@ -5,6 +5,7 @@ import communication.socket.request.RequestHandler;
 public class HandlerSpawner extends Thread{
 
     private Socket clientSocket;
+    
     public HandlerSpawner(Socket clientSocket){
         this.clientSocket = clientSocket;
     }
