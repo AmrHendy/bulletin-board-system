@@ -3,13 +3,13 @@ package execution;
 public class SocketStrategy implements ExecutionStrategy{
 
     @Override
-    public String read() {
+    public String read(Client client) {
         // TODO
         return null;
     }
 
     @Override
-    public void write(String value) {
+    public void write(String value, Client client) {
 
     }
 }

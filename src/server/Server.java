@@ -1,7 +1,5 @@
 package server;
 
-
-
 public class Server {
     private String ipAddress;
     private int portNumber;

@@ -2,7 +2,7 @@ package execution;
 
 public interface ExecutionStrategy {
 
-    public String read();
+    public String read(Client client);
 
-    public void write(String value);
+    public void write(String value, Client client);
 }
