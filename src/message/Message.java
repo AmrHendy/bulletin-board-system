@@ -1,27 +1,28 @@
 package message;
 
-// TODO ENUM
-public class Message {
-    private Type type;
-    private String value;
+public enum RequestType {
+    READ, WRITE;
+}
 
-    public Message(Type type, String value){
+public class Message {
+    private RequestType type;
+    private int value;
+
+    public Message(RequestType type, int value) {
         this.type = type;
         this.value = value;
     }
 
-    public Message(String message){
-        parse(message);
+    public RequestType getRequestType() {
+        return type;
+    }
+
+    public int getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return type + "," + value;
-    }
-
-    private void parse(String message){
-        String[] splits = message.split(",");
-        this.type = splits[0];
-        this.value = splits[1];
+        return type.toString() + "," + value;
     }
 }

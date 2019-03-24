@@ -1,10 +1,16 @@
 package communication.socket.request;
 
-public class RequestHandler {
-    private static requestHandlerInstance = null;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-    private RequestHandler(){
-        
+import message.Message;
+import message.RequestType;
+
+public class RequestHandler {
+    private static RequestHandler requestHandlerInstance = null;
+    private static ReentrantReadWriteLock lock;
+
+    private RequestHandler() {
+        lock = new ReentrantReadWriteLock();
     }
 
     public static RequestHandler getRequestHandlerInstance() {
@@ -14,15 +20,28 @@ public class RequestHandler {
         return requestHandlerInstance;
     }
 
-    public static void handle(Socket socket) {
-        // TODO read request
+    public static void handle(Message requestMessage, Integer newsValue) {
+        switch (requestMessage.getRequestType()) {
+        case READ:
+            handleRead(requestMessage, newsValue);
+            break;
+        case WRITE:
+            handleWrite(requestMessage, newsValue);
+            break;
+        default:
+            System.err.println("Error, not supported request type");
+        }
     }
 
-    private void handleRead(Request request) {
-
+    private static void handleRead(Message requestMessage, Integer newsValue) {
+        lock.readLock().lock();
+        int currentValue = newsValue;
+        lock.readLock().unlock();
     }
 
-    private synchronized void handleWrite(Request request) {
-
+    private static synchronized void handleWrite(Message requestMessage, Integer newsValue) {
+        lock.writeLock().lock();
+        newsValue = requestMessage.getValue();
+        lock.writeLock().unlock();
     }
 }
