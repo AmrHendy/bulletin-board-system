@@ -3,6 +3,8 @@ package communication.socket;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 
 import communication.CommunicationStrategy;
 import communication.socket.request.RequestHandler;
@@ -18,6 +20,9 @@ public class SocketStrategy implements CommunicationStrategy {
     private Integer newsValue;
     private Integer currentReaders;
 
+    private List<String> serverReadLogs;
+    private List<String> serverWriteLogs;
+
     public SocketStrategy() {
         // Make sure that we create an instance of requestHandler at first to avoid
         // multiple instances in multi-threading
@@ -28,6 +33,12 @@ public class SocketStrategy implements CommunicationStrategy {
         requestSeq = serviceSeq = 1;
         currentReaders = 0;
         newsValue = -1;
+        // initialize the server logs
+        serverReadLogs = new ArrayList<>();
+        serverWriteLogs = new ArrayList<>();
+
+        serverReadLogs.add("sSeq\toVal\trID\trNum\n");
+        serverReadLogs.add("sSeq\toVal\twID\n");
     }
 
     @Override
@@ -52,6 +63,7 @@ public class SocketStrategy implements CommunicationStrategy {
         public void run() {
             BufferedReader in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
             PrintWriter out = new PrintWriter(requestSocket.getOutputStream(), true);
+            // string builder to store the client log
             StringBuilder stringBuilder = new StringBuilder();
             // recieved the request, so store the request seq
             synchronized (requestSeq) {
@@ -82,26 +94,44 @@ public class SocketStrategy implements CommunicationStrategy {
 
             // handling the request
             RequestHandler.handle(clientSocket, newsValue);
-            // finished serving the request
-            if (tokens[1].equalsIgnoreCase("read")) {
-                synchronized (currentReaders) {
-                    currentReaders--;
-                }
-            }
-            stringBuilder.append(" ");
+
+            stringBuilder.append("\t");
             synchronized (serviceSeq) {
                 stringBuilder.append(serviceSeq);
                 serviceSeq++;
             }
-            stringBuilder.append(" ");
+            stringBuilder.append("\t");
             synchronized (newsValue) {
                 stringBuilder.append(newsValue);
             }
-            // send the response as following: rSeq [space] sSeq [space] value ["\n"]
+            stringBuilder.append("\n");
+            // send the response as following: rSeq [tab] sSeq [tab] value ["\n"]
             out.println(stringBuilder.toString());
 
             // server logging
-
+            String[] logTokens = stringBuilder.toString().split("\t");
+            stringBuilder = new StringBuilder();
+            stringBuilder.append(logTokens[1]);
+            stringBuilder.append("\t");
+            stringBuilder.append(logTokens[2]);
+            stringBuilder.append("\t");
+            stringBuilder.append(logTokens[0]);
+            if (tokens[1].equalsIgnoreCase("read")) {
+                stringBuilder.append("\t");
+                synchronized (currentReaders) {
+                    stringBuilder.append(currentReaders);
+                    currentReaders--;
+                }
+                stringBuilder.append("\n");
+                synchronized (serverReadLogs) {
+                    serverReadLogs.add(stringBuilder.toString());
+                }
+            } else if (tokens[1].equalsIgnoreCase("write")) {
+                stringBuilder.append("\n");
+                synchronized (serverWriteLogs) {
+                    serverWriteLogs.add(stringBuilder.toString());
+                }
+            }
         }
     }
 }
