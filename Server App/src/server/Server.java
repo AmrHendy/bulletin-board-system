@@ -1,8 +1,8 @@
 package server;
 
-import client.communication.CommunicationStrategy;
-import client.communication.rmi.RMIStrategy;
-import client.communication.socket.SocketStrategy;
+import communication.CommunicationStrategy;
+import communication.rmi.RMIStrategy;
+import communication.socket.SocketStrategy;
 import utilities.StrategyType;
 
 public class Server {

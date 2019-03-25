@@ -1,10 +1,10 @@
-package client.communication.rmi;
+package communication.rmi;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import client.communication.CommunicationStrategy;
+import communication.CommunicationStrategy;
 import configuration.Configuration;
 
 public class RMIStrategy implements CommunicationStrategy {

@@ -1,10 +1,10 @@
 package main;
 
-import client.Client;
-import client.ReaderClient;
-import client.WriterClient;
+import java.io.IOException;
+
 import configuration.Configuration;
 import server.Server;
+import utilities.FileHandler;
 import utilities.StrategyType;
 
 public class Start {
@@ -19,29 +19,26 @@ public class Start {
     		// args = clientId, 'read'/'write', accessCount, strategyType, severAddress, serverPort, stubName
         	String clientIdArg = String.valueOf(clientId);
         	String clientTypeArg = Configuration.getConfiguration().getConf("client-type-" + clientId);
-        	String clientAccessCountArg = Configuration.getConfiguration().getConf("client-access-count-" + clientId);
+        	String clientAccessCountArg = Configuration.getConfiguration().getConf("client-access");
         	String clientStrategyTypeArg = Configuration.getConfiguration().getConf("type");
         	String serverAddressArg = Configuration.getConfiguration().getConf("server-address");
         	String serverPortArg = Configuration.getConfiguration().getConf("server-port");
         	String stubNameArg = Configuration.getConfiguration().getConf("stub-name");
         	
-        	//TODO ssh
-        	// String path = "";
-        	// Runtime.getRuntime().exec("ssh " + clientAddress + " cd " + path + " ;" + "java  " + ... arguments ... );
+        	try {
+				Runtime.getRuntime().exec("ssh " + clientAddress + "java Client.jar "
+						+ clientIdArg + " "
+						+ clientTypeArg + " "
+						+ clientAccessCountArg + " "
+						+ clientStrategyTypeArg + " "
+						+ serverAddressArg + " "
+						+ serverPortArg + " "
+						+ stubNameArg);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
-        
-        
-        
-    	/* reader client */
-        Client c1 = new ReaderClient(StrategyType.SOCKET);
-        String news = c1.read();
-        System.log.print(news);
-
-        /* writer client */
-        String someNews = "hello world";
-        Client c2 = new WriterClient(StrategyType.SOCKET);
-        c2.write(someNews);
-        System.log.print(someNews);
     }
 
     private static void runServer(){
@@ -59,11 +56,8 @@ public class Start {
 
     public static void main(String args[]){
     	String fileName = args[0];
-        FileHandler.readConfiguration(fileName);
-    	
+        FileHandler.readConfig(fileName);
         runServer();
-        
-        
         spawnClients();
     }
 

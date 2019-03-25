@@ -1,4 +1,4 @@
-package client.communication.socket.request;
+package communication.socket.request;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 

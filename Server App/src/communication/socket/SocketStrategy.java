@@ -1,4 +1,4 @@
-package client.communication.socket;
+package communication.socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import client.communication.CommunicationStrategy;
-import client.communication.socket.request.RequestHandler;
+import communication.CommunicationStrategy;
+import communication.socket.request.RequestHandler;
 import configuration.Configuration;
 import message.Message;
 import utilities.RequestType;
