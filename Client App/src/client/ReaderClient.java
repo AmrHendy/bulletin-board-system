@@ -10,7 +10,8 @@ public class ReaderClient extends Client {
 
 	@Override
     public void read() {
-        while(this.accessCount-- > 0) {
+		while(this.accessCount-- > 0) {
+			System.out.println(this.accessCount);
         	executionStrategy.read();
         }
     }

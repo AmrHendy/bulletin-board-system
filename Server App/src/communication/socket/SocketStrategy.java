@@ -34,7 +34,8 @@ public class SocketStrategy implements CommunicationStrategy {
         
         try {
 			serverSocket = new ServerSocket(serverPort);
-		} catch (IOException e) {
+			System.out.println("success");
+        } catch (IOException e) {
 			e.printStackTrace();
 		}
         
@@ -58,8 +59,10 @@ public class SocketStrategy implements CommunicationStrategy {
             Socket requestSocket;
 			try {
 				requestSocket = serverSocket.accept();
+				System.out.println("Server received request");
 				Thread requestThread = new HandlerSpawner(requestSocket);
-	            requestThread.start();
+				System.out.println("Server created request spawner");
+				requestThread.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -78,14 +81,17 @@ public class SocketStrategy implements CommunicationStrategy {
             	
         	try {		
         		BufferedReader in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
+        		System.out.println("100");
         		PrintWriter out = new PrintWriter(requestSocket.getOutputStream(), true);
         		// string builder to store the client log
+        		System.out.println("101");
         		StringBuilder stringBuilder = new StringBuilder();
         		// recieved the request, so store the request seq
         		synchronized (requestSeq) {
         			stringBuilder.append(requestSeq);
         			requestSeq++;
         		}
+        		System.out.println("102");
         		// the request message must be on the following pattern:
         		// clientId [space] type [space] value
         		// in case of read request it will be: clientId [space] read [space] empty
@@ -96,13 +102,16 @@ public class SocketStrategy implements CommunicationStrategy {
         		String requestType = tokens[1];
         		String value = (tokens.length > 2 ? tokens[2] : null);
         		
+        		System.out.println(requestType);
+        		
         		Message requestMessage ;
-        		if (tokens[1].equalsIgnoreCase("read")) {
+        		if (requestType.equalsIgnoreCase("read")) {
+        			System.out.println("103");
         			synchronized (currentReaders) {
         				currentReaders++;
         			}
         			requestMessage = new Message(RequestType.READ, Integer.valueOf(value));
-        		} else if (tokens[1].equalsIgnoreCase("write")) {
+        		} else if (requestType.equalsIgnoreCase("write")) {
         			requestMessage = new Message(RequestType.WRITE, Integer.valueOf(value));
         		} else {
         			System.err.println("Error, not supported request type");
@@ -111,7 +120,7 @@ public class SocketStrategy implements CommunicationStrategy {
         		
         		// handling the request
         		RequestHandler.handle(requestMessage, newsValue);
-        		
+        			
         		stringBuilder.append("\t");
         		synchronized (serviceSeq) {
         			stringBuilder.append(serviceSeq);

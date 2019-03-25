@@ -44,7 +44,7 @@ public class FileHandler {
 					key = "type" ;
 					break;
 				default:
-					key = key.split(".")[1] ;
+					key = key.split("\\.")[1] ;
 					if(key.contains("reader")) {
 						String id = key.split("reader")[0] ;
 						key = "client-address-" + id ;
@@ -60,9 +60,12 @@ public class FileHandler {
 				}
 				Configuration.getConfiguration().addConf(key, value);
 			}
-			int readersCount =  Integer.valueOf(Configuration.getConfiguration().getConf("number-readers")) ;
+			int readersCount =  Integer.valueOf(Configuration.getConfiguration().getConf("number-readers"));
 			int writersCount =  Integer.valueOf(Configuration.getConfiguration().getConf("number-writers"));
 			Configuration.getConfiguration().addConf("client-count", String.valueOf(readersCount + writersCount));
+			int totalRequests = Integer.valueOf(Configuration.getConfiguration().getConf("client-count")) * 
+										Integer.valueOf(Configuration.getConfiguration().getConf("client-access"));
+			Configuration.getConfiguration().addConf("total-requests", String.valueOf(totalRequests));
 
 			reader.close();
 		} catch (IOException e) {
