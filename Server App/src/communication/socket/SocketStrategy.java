@@ -10,6 +10,7 @@ import communication.CommunicationStrategy;
 import communication.socket.request.RequestHandler;
 import configuration.Configuration;
 import message.Message;
+import utilities.Logger;
 import utilities.RequestType;
 
 public class SocketStrategy implements CommunicationStrategy {
@@ -56,7 +57,7 @@ public class SocketStrategy implements CommunicationStrategy {
             Socket requestSocket;
 			try {
 				requestSocket = serverSocket.accept();
-				System.out.println("Server received request");
+				System.out.println("Server accepted the request");
 				Thread requestThread = new HandlerSpawner(requestSocket);
 				System.out.println("Server created request spawner");
 				requestThread.start();
@@ -75,20 +76,16 @@ public class SocketStrategy implements CommunicationStrategy {
 
         @Override
         public void run() {
-            	
         	try {		
         		DataInputStream in = new DataInputStream(requestSocket.getInputStream()); ;
-        		System.out.println("100");
 				DataOutputStream out = new DataOutputStream(requestSocket.getOutputStream());
         		// string builder to store the client log
-        		System.out.println("101");
         		StringBuilder stringBuilder = new StringBuilder();
         		// recieved the request, so store the request seq
         		synchronized (requestSeq) {
         			stringBuilder.append(requestSeq);
         			requestSeq++;
         		}
-        		System.out.println("102");
         		// the request message must be on the following pattern:
         		// clientId [space] type [space] value
         		// in case of read request it will be: clientId [space] read [space] empty
@@ -103,7 +100,6 @@ public class SocketStrategy implements CommunicationStrategy {
         		
         		Message requestMessage ;
         		if (requestType.equalsIgnoreCase("read")) {
-        			System.out.println("103");
         			synchronized (currentReaders) {
         				currentReaders++;
         			}
@@ -112,13 +108,13 @@ public class SocketStrategy implements CommunicationStrategy {
         			requestMessage = new Message(RequestType.WRITE, Integer.valueOf(value));
         		} else {
         			System.err.println("Error, not supported request type");
-        			return ;
+        			return;
         		}
 
-        		System.out.println("received the request");
+        		System.out.println("Server received the client request");
         		// handling the request
         		RequestHandler.handle(requestMessage, newsValue);
-				System.out.println("handled the request");
+				System.out.println("Server handled the request");
 
 				stringBuilder.append("\t");
         		synchronized (serviceSeq) {
@@ -131,8 +127,10 @@ public class SocketStrategy implements CommunicationStrategy {
         		}
         		// send the response as following: rSeq [tab] sSeq [tab] value ["\n"]
         		out.writeUTF(stringBuilder.toString());
-        		System.out.println("response sent to client = " + stringBuilder.toString());
-        		// server logging
+        		System.out.println("Server sent the response to the client");
+				System.out.println("response = " + stringBuilder.toString());
+
+				// server logging
         		String[] logTokens = stringBuilder.toString().split("\t");
         		stringBuilder = new StringBuilder();
         		stringBuilder.append(logTokens[1]);
@@ -149,11 +147,13 @@ public class SocketStrategy implements CommunicationStrategy {
         			stringBuilder.append("\n");
         			synchronized (serverReadLogs) {
         				serverReadLogs.add(stringBuilder.toString());
+						Logger.logServer("read", stringBuilder.toString());
         			}
         		} else if (tokens[1].equalsIgnoreCase("write")) {
         			stringBuilder.append("\n");
         			synchronized (serverWriteLogs) {
         				serverWriteLogs.add(stringBuilder.toString());
+						Logger.logServer("write", stringBuilder.toString());
         			}
         		}
 

@@ -24,8 +24,6 @@ public abstract class Client {
 
     abstract public void write() throws UnsupportedOperationException;
 
-    abstract public void log();
-
     void initConnection(){
 		if(type.equalsIgnoreCase("socket"))
 		{

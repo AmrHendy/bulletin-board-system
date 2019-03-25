@@ -1,5 +1,7 @@
 package client;
 
+import utilities.Logger;
+
 public class WriterClient extends Client{
 
 	public WriterClient() {
@@ -9,15 +11,12 @@ public class WriterClient extends Client{
 
     @Override
     public void write() {
-    	while(this.accessCount-- > 0) {
+        String logsFileHeader = "rSeq\tsSeq";
+        Logger.logClient(this.clientId, logsFileHeader);
+	    while(this.accessCount-- > 0) {
             initConnection();
     	    executionStrategy.write(clientId);
         };
-    }
-
-    @Override
-    public void log() {
-
     }
 
     @Override

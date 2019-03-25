@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import configuration.Configuration;
+import utilities.Logger;
 
 public class SocketStrategy implements ExecutionStrategy {
 
@@ -41,24 +42,23 @@ public class SocketStrategy implements ExecutionStrategy {
         stringBuilder.append("\t");
         stringBuilder.append("empty");
 		try {
-	        socketOut.writeUTF(stringBuilder.toString());
+		    socketOut.writeUTF(stringBuilder.toString());
+            System.out.println("client sent the read request to the server socket");
 	        // recieve the responce from the server
 	        // the response as following: rSeq [tab] sSeq [tab] value ["\n"]
-
-	    	System.out.println("in");
 	        String response = socketIn.readUTF();
-	    	System.out.println("out");
+            System.out.println("client received the read response from the server socket");
 	    	System.out.println("response = " + response);
+	    	// parse the response
 	        String[] responseTokens = response.split("\t");
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
 	        int value = Integer.parseInt(responseTokens[2]);
-	        System.out.println(rSeq + " " + sSeq + " " + value);
-
+            // client logging
+	        Logger.logClient(this.clientId, response);
             socketIn.close();
             socketOut.close();
             clientSocket.close();
-
 		} catch (IOException | NullPointerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,15 +78,17 @@ public class SocketStrategy implements ExecutionStrategy {
         stringBuilder.append(value);
         try {
 	        socketOut.writeUTF(stringBuilder.toString());
-	
-	        // recieve the responce from the server
+            System.out.println("client sent the write request to the server socket");
+            // recieve the responce from the server
 	        // the response as following: rSeq [tab] sSeq [tab] value ["\n"]
-	        String response = socketIn.readLine();
-	        String[] responseTokens = response.split("\t");
+	        String response = socketIn.readUTF();
+            System.out.println("client received the write response from the server socket");
+            // parse the response
+            String[] responseTokens = response.split("\t");
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
-	        System.out.println(rSeq + " " + sSeq);
-
+            // client logging
+            Logger.logClient(this.clientId, response);
             socketIn.close();
             socketOut.close();
             clientSocket.close();

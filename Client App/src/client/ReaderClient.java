@@ -1,5 +1,7 @@
 package client;
 
+import utilities.Logger;
+
 public class ReaderClient extends Client {
 	
     
@@ -10,16 +12,13 @@ public class ReaderClient extends Client {
 
 	@Override
     public void read() {
+        String logsFileHeader = "rSeq\tsSeq\toVal";
+        Logger.logClient(this.clientId, logsFileHeader);
 		while(this.accessCount-- > 0) {
 			System.out.println(this.accessCount);
 			initConnection();
 			executionStrategy.read();
         }
-    }
-
-    @Override
-    public void log() {
-    	
     }
 
     @Override
