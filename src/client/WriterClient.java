@@ -4,9 +4,20 @@ import jdk.jshell.spi.ExecutionControl;
 
 public class WriterClient extends Client{
 
-    @Override
-    public void write() {
 
+    public WriterClient(StrategyType type)
+    {
+        if(type == StrategyType.SOCKET)
+        {
+            this.strategy = new SocketStrategy();
+        }else{
+            this.strategy = new RMIStrategy();
+        }
+    }
+
+    @Override
+    public void write(String news) {
+        strategy.write(news);
     }
 
     @Override
@@ -15,7 +26,7 @@ public class WriterClient extends Client{
     }
 
     @Override
-    public void read() throws ExecutionControl.NotImplementedException {
+    public String read() throws ExecutionControl.NotImplementedException {
         throw new ExecutionControl.NotImplementedException("");
     }
 }

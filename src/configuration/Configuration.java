@@ -8,7 +8,7 @@ public class Configuration {
     private HashMap<String, String> confMap;
 
     private Configuration() {
-        confMap = new HashMap<>()
+        confMap = new HashMap<>();
     }
 
     public static Configuration getConfiguration() {
