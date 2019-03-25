@@ -1,4 +1,4 @@
-package communication;
+package client.communication;
 
 public interface CommunicationStrategy {
 

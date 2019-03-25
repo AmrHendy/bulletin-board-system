@@ -1,23 +1,17 @@
 package client;
 
-import jdk.jshell.spi.ExecutionControl;
-
 public class WriterClient extends Client{
 
-
-    public WriterClient(StrategyType type)
-    {
-        if(type == StrategyType.SOCKET)
-        {
-            this.strategy = new SocketStrategy();
-        }else{
-            this.strategy = new RMIStrategy();
-        }
-    }
+	public WriterClient() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
     @Override
-    public void write(String news) {
-        strategy.write(news);
+    public void write() {
+    	while(this.accessCount-- > 0) {
+        	executionStrategy.write(clientId);
+        };
     }
 
     @Override
@@ -26,7 +20,7 @@ public class WriterClient extends Client{
     }
 
     @Override
-    public String read() throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("");
+    public void read() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 }

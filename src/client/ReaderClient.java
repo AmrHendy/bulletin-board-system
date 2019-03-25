@@ -1,31 +1,27 @@
 package client;
 
-import jdk.jshell.spi.ExecutionControl;
-
 public class ReaderClient extends Client {
+	
+    
+    public ReaderClient() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    public ReaderClient(StrategyType type)
-    {
-        if(type == StrategyType.SOCKET)
-        {
-            this.strategy = new SocketStrategy();
-        }else{
-            this.strategy = new RMIStrategy();
+	@Override
+    public void read() {
+        while(this.accessCount-- > 0) {
+        	executionStrategy.read();
         }
     }
 
     @Override
-    public String read() {
-        return strategy.read();
-    }
-
-    @Override
     public void log() {
-
+    	
     }
 
     @Override
-    public void write(String news) throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("");
+    public void write() throws UnsupportedOperationException{
+    	throw new UnsupportedOperationException() ;
     }
 }

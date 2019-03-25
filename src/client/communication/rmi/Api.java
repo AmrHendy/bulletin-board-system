@@ -1,4 +1,4 @@
-package communication.rmi;
+package client.communication.rmi;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -9,6 +9,7 @@ public class Api extends UnicastRemoteObject implements ApiInterface {
 
     private AtomicInteger Sseq , num_readers ;
     private String data ;
+    
 
     // TODO
     // private Logger log
@@ -21,15 +22,15 @@ public class Api extends UnicastRemoteObject implements ApiInterface {
 
 
     @Override
-    public synchronized String read(int id) throws RemoteException {
+    public synchronized String read(int id){
         int current_readers = num_readers.incrementAndGet() ;
         // TODO
-        // log.log_reader(Sseq + "\t\t" + value + "\t\t" + id + "\t\t" + current_readers + "\n")
+        // log.log_reader(Sseq + "\t\t" + data + "\t\t" + id + "\t\t" + current_readers + "\n")
         return new String("currentRseq" + "," + Sseq.getAndIncrement() + "," + data);
     }
 
     @Override
-    public synchronized String write(int value, int id) throws RemoteException {
+    public synchronized String write(int value, int id){
         // TODO
         // log.log_reader(Sseq + "\t\t" + value + "\t\t" + id + "\n")
         return new String("currentRseq" + "," + Sseq.getAndIncrement() + "," + data);

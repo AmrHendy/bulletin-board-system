@@ -1,8 +1,6 @@
 package message;
 
-public enum RequestType {
-    READ, WRITE;
-}
+import utilities.RequestType;
 
 public class Message {
     private RequestType type;

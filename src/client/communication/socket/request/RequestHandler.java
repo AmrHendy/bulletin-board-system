@@ -1,9 +1,8 @@
-package communication.socket.request;
+package client.communication.socket.request;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import message.Message;
-import message.RequestType;
 
 public class RequestHandler {
     private static RequestHandler requestHandlerInstance = null;

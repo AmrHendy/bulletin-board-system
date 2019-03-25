@@ -2,7 +2,7 @@ package execution;
 
 public interface ExecutionStrategy {
 
-    public String read();
+    public void read();
 
-    public void write(String value);
+    public void write(int value);
 }
