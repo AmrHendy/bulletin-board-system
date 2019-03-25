@@ -2,9 +2,9 @@ package client;
 
 
 import configuration.Configuration;
-import execution.ExecutionStrategy;
-import execution.SocketStrategy;
-import execution.rmi.RMIStrategy;
+import communication.ExecutionStrategy;
+import communication.SocketStrategy;
+import communication.rmi.RMIStrategy;
 
 public abstract class Client {
 	protected ExecutionStrategy executionStrategy;

@@ -1,8 +1,5 @@
 package client;
 
-import execution.SocketStrategy;
-import execution.rmi.RMIStrategy;
-
 public class ReaderClient extends Client {
 	
     
