@@ -1,5 +1,8 @@
 package client;
 
+import execution.SocketStrategy;
+import execution.rmi.RMIStrategy;
+
 public class ReaderClient extends Client {
 	
     
@@ -12,7 +15,8 @@ public class ReaderClient extends Client {
     public void read() {
 		while(this.accessCount-- > 0) {
 			System.out.println(this.accessCount);
-        	executionStrategy.read();
+			initConnection();
+			executionStrategy.read();
         }
     }
 

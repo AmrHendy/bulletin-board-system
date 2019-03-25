@@ -1,9 +1,6 @@
 package communication.socket;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -34,7 +31,7 @@ public class SocketStrategy implements CommunicationStrategy {
         
         try {
 			serverSocket = new ServerSocket(serverPort);
-			System.out.println("success");
+			System.out.println("Starting Server Using Socket");
         } catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,9 +77,9 @@ public class SocketStrategy implements CommunicationStrategy {
         public void run() {
             	
         	try {		
-        		BufferedReader in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
+        		DataInputStream in = new DataInputStream(requestSocket.getInputStream()); ;
         		System.out.println("100");
-        		PrintWriter out = new PrintWriter(requestSocket.getOutputStream(), true);
+				DataOutputStream out = new DataOutputStream(requestSocket.getOutputStream());
         		// string builder to store the client log
         		System.out.println("101");
         		StringBuilder stringBuilder = new StringBuilder();
@@ -96,13 +93,13 @@ public class SocketStrategy implements CommunicationStrategy {
         		// clientId [space] type [space] value
         		// in case of read request it will be: clientId [space] read [space] empty
         		// in case of write request it will be: clientId [space] write [space] value
-        		String request = in.readLine();
+        		String request = in.readUTF();
         		String[] tokens = request.split("\t");
         		String clientId = tokens[0];
         		String requestType = tokens[1];
         		String value = (tokens.length > 2 ? tokens[2] : null);
         		
-        		System.out.println(requestType);
+        		System.out.println(request);
         		
         		Message requestMessage ;
         		if (requestType.equalsIgnoreCase("read")) {
@@ -110,18 +107,20 @@ public class SocketStrategy implements CommunicationStrategy {
         			synchronized (currentReaders) {
         				currentReaders++;
         			}
-        			requestMessage = new Message(RequestType.READ, Integer.valueOf(value));
+        			requestMessage = new Message(RequestType.READ, -1);
         		} else if (requestType.equalsIgnoreCase("write")) {
         			requestMessage = new Message(RequestType.WRITE, Integer.valueOf(value));
         		} else {
         			System.err.println("Error, not supported request type");
         			return ;
         		}
-        		
+
+        		System.out.println("received the request");
         		// handling the request
         		RequestHandler.handle(requestMessage, newsValue);
-        			
-        		stringBuilder.append("\t");
+				System.out.println("handled the request");
+
+				stringBuilder.append("\t");
         		synchronized (serviceSeq) {
         			stringBuilder.append(serviceSeq);
         			serviceSeq++;
@@ -130,10 +129,9 @@ public class SocketStrategy implements CommunicationStrategy {
         		synchronized (newsValue) {
         			stringBuilder.append(newsValue);
         		}
-        		stringBuilder.append("\n");
         		// send the response as following: rSeq [tab] sSeq [tab] value ["\n"]
-        		out.println(stringBuilder.toString());
-        		
+        		out.writeUTF(stringBuilder.toString());
+        		System.out.println("response sent to client = " + stringBuilder.toString());
         		// server logging
         		String[] logTokens = stringBuilder.toString().split("\t");
         		stringBuilder = new StringBuilder();
@@ -158,6 +156,10 @@ public class SocketStrategy implements CommunicationStrategy {
         				serverWriteLogs.add(stringBuilder.toString());
         			}
         		}
+
+        		in.close();
+        		out.close();
+        		requestSocket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

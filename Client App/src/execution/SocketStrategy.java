@@ -1,20 +1,17 @@
 package execution;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import configuration.Configuration;
-import java.io.InputStreamReader;
 
 public class SocketStrategy implements ExecutionStrategy {
 
     private Socket clientSocket;
     private int clientId;
-    private BufferedReader socketIn;
-    private PrintWriter socketOut;
+    private DataInputStream socketIn;
+    private DataOutputStream socketOut;
 
     public SocketStrategy() {
         String serverAddress = Configuration.getConfiguration().getConf("server-address");
@@ -22,9 +19,10 @@ public class SocketStrategy implements ExecutionStrategy {
         this.clientId = Integer.valueOf(Configuration.getConfiguration().getConf("client-id")) ;
         try {
         	System.out.println(serverAddress + "\t" + serverPort);
-			clientSocket = new Socket(serverAddress, serverPort);
-	        socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-	        socketOut = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            InetAddress serverAddressNet = InetAddress.getByName(serverAddress);
+            clientSocket = new Socket(serverAddressNet, serverPort);
+	        socketIn = new DataInputStream(clientSocket.getInputStream());
+	        socketOut = new DataOutputStream(clientSocket.getOutputStream());
 	        System.out.println("successfully connected to server");
         } catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -34,7 +32,6 @@ public class SocketStrategy implements ExecutionStrategy {
 
     @Override
     public void read() {
-        
     	// send read request
         // in case of read request it will be: clientId [tab] read [tab] empty
         StringBuilder stringBuilder = new StringBuilder();
@@ -44,18 +41,24 @@ public class SocketStrategy implements ExecutionStrategy {
         stringBuilder.append("\t");
         stringBuilder.append("empty");
 		try {
-	        socketOut.println(stringBuilder.toString());
+	        socketOut.writeUTF(stringBuilder.toString());
 	        // recieve the responce from the server
 	        // the response as following: rSeq [tab] sSeq [tab] value ["\n"]
 
 	    	System.out.println("in");
-	        String response = socketIn.readLine();
+	        String response = socketIn.readUTF();
 	    	System.out.println("out");
+	    	System.out.println("response = " + response);
 	        String[] responseTokens = response.split("\t");
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
 	        int value = Integer.parseInt(responseTokens[2]);
 	        System.out.println(rSeq + " " + sSeq + " " + value);
+
+            socketIn.close();
+            socketOut.close();
+            clientSocket.close();
+
 		} catch (IOException | NullPointerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +77,7 @@ public class SocketStrategy implements ExecutionStrategy {
         stringBuilder.append("\t");
         stringBuilder.append(value);
         try {
-	        socketOut.println(stringBuilder.toString());
+	        socketOut.writeUTF(stringBuilder.toString());
 	
 	        // recieve the responce from the server
 	        // the response as following: rSeq [tab] sSeq [tab] value ["\n"]
@@ -83,6 +86,10 @@ public class SocketStrategy implements ExecutionStrategy {
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
 	        System.out.println(rSeq + " " + sSeq);
+
+            socketIn.close();
+            socketOut.close();
+            clientSocket.close();
         } catch (IOException | NullPointerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

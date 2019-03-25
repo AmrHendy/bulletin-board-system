@@ -10,7 +10,8 @@ public class WriterClient extends Client{
     @Override
     public void write() {
     	while(this.accessCount-- > 0) {
-        	executionStrategy.write(clientId);
+            initConnection();
+    	    executionStrategy.write(clientId);
         };
     }
 
