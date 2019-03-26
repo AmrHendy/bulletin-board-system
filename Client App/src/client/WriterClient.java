@@ -14,7 +14,8 @@ public class WriterClient extends Client{
         String logsFileHeader = "rSeq\tsSeq";
         Logger.logClient(this.clientId, logsFileHeader);
 	    while(this.accessCount-- > 0) {
-            initConnection();
+            sleep();
+	        initConnection();
     	    executionStrategy.write(clientId);
             System.out.println("Finished request " + String.valueOf(this.accessCount + 1));
         };

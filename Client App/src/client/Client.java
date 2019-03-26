@@ -24,12 +24,23 @@ public abstract class Client {
 
     abstract public void write() throws UnsupportedOperationException;
 
-    void initConnection(){
+    protected void initConnection(){
 		if(type.equalsIgnoreCase("socket"))
 		{
 			this.executionStrategy = new SocketStrategy();
 		}else {
 			this.executionStrategy = new RMIStrategy();
+		}
+	}
+
+	protected void sleep(){
+		long minSleep = 1000;
+		long maxSleep = 5000;
+		long sleepTime = minSleep + (long)(Math.random() * (maxSleep - minSleep));
+		try{
+			Thread.sleep(sleepTime);
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 }
