@@ -19,12 +19,11 @@ public class SocketStrategy implements ExecutionStrategy {
         int serverPort = Integer.valueOf(Configuration.getConfiguration().getConf("server-port")) ;
         this.clientId = Integer.valueOf(Configuration.getConfiguration().getConf("client-id")) ;
         try {
-        	System.out.println(serverAddress + "\t" + serverPort);
             InetAddress serverAddressNet = InetAddress.getByName(serverAddress);
             clientSocket = new Socket(serverAddressNet, serverPort);
 	        socketIn = new DataInputStream(clientSocket.getInputStream());
 	        socketOut = new DataOutputStream(clientSocket.getOutputStream());
-	        System.out.println("successfully connected to server");
+	        System.out.println("Successfully connected to server with address = " + serverAddress + " and port = " + serverPort);
         } catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,8 +53,10 @@ public class SocketStrategy implements ExecutionStrategy {
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
 	        int value = Integer.parseInt(responseTokens[2]);
-            // client logging
-	        Logger.logClient(this.clientId, response);
+
+	        // client logging
+	        String logMessage = rSeq + "\t\t" + sSeq + "\t\t" + value;
+            Logger.logClient(this.clientId, logMessage);
             socketIn.close();
             socketOut.close();
             clientSocket.close();
@@ -68,7 +69,6 @@ public class SocketStrategy implements ExecutionStrategy {
     // value = clientId sent from the client
     @Override
     public void write(int value) {
-        // send read request
         // in case of read request it will be: clientId [tab] read [tab] empty
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(clientId);
@@ -79,16 +79,20 @@ public class SocketStrategy implements ExecutionStrategy {
         try {
 	        socketOut.writeUTF(stringBuilder.toString());
             System.out.println("client sent the write request to the server socket");
+
             // recieve the responce from the server
 	        // the response as following: rSeq [tab] sSeq [tab] value ["\n"]
 	        String response = socketIn.readUTF();
             System.out.println("client received the write response from the server socket");
+
             // parse the response
             String[] responseTokens = response.split("\t");
 	        int rSeq = Integer.parseInt(responseTokens[0]);
 	        int sSeq = Integer.parseInt(responseTokens[1]);
-            // client logging
-            Logger.logClient(this.clientId, response);
+
+	        // client logging
+            String logMessage = rSeq + "\t\t" + sSeq;
+            Logger.logClient(this.clientId, logMessage);
             socketIn.close();
             socketOut.close();
             clientSocket.close();

@@ -15,9 +15,10 @@ public class ReaderClient extends Client {
         String logsFileHeader = "rSeq\tsSeq\toVal";
         Logger.logClient(this.clientId, logsFileHeader);
 		while(this.accessCount-- > 0) {
-			System.out.println(this.accessCount);
 			initConnection();
 			executionStrategy.read();
+            System.out.println("Finished request " + String.valueOf(this.accessCount + 1));
+            System.out.println("=================================================================");
         }
     }
 

@@ -5,9 +5,6 @@ import configuration.Configuration;
 public class ClientMain {
 	public static void main(String[] args) {
 		// args = clientId, 'read'/'write', accessCount, strategyType, severAddress, serverPort, stubName
-		for(String arg : args) {
-			System.out.println(arg);
-		}
 		Configuration.getConfiguration().addConf("client-id", args[0]);
 		Configuration.getConfiguration().addConf("access-count", args[2]);
 		Configuration.getConfiguration().addConf("type", args[3]);

@@ -85,7 +85,7 @@ public class Start {
 		String fileName = args[0];
 		FileHandler.readConfig(fileName);
 		runServer();
-		spawnClients();
+		//spawnClients();
 	}
 
 }

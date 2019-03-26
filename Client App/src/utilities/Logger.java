@@ -1,6 +1,8 @@
 package utilities;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 
 public class Logger {
@@ -23,8 +25,14 @@ public class Logger {
 
     private static void logMessage(String filePath, String message){
         try{
-            PrintWriter printWriter = new PrintWriter(new File(filePath));
-            printWriter.write(message);
+            // remove extra new lines
+            message = message.replace("\n", "");
+            // true for append mode
+            FileWriter fileWriter = new FileWriter(new File(filePath), true);
+            PrintWriter printWriter = new PrintWriter(new BufferedWriter(fileWriter));
+            printWriter.println(message);
+            printWriter.close();
+            fileWriter.close();
         } catch(Exception e){
             System.out.println("Error in logging for file path : " + filePath);
         }

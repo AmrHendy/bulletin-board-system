@@ -16,6 +16,7 @@ public class WriterClient extends Client{
 	    while(this.accessCount-- > 0) {
             initConnection();
     	    executionStrategy.write(clientId);
+            System.out.println("Finished request " + String.valueOf(this.accessCount + 1));
         };
     }
 

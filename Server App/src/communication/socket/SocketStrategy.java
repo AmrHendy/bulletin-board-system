@@ -32,7 +32,7 @@ public class SocketStrategy implements CommunicationStrategy {
         
         try {
 			serverSocket = new ServerSocket(serverPort);
-			System.out.println("Starting Server Using Socket");
+			System.out.println("Starting Server Using Socket on port " + serverPort);
         } catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,8 +45,12 @@ public class SocketStrategy implements CommunicationStrategy {
         serverReadLogs = new ArrayList<>();
         serverWriteLogs = new ArrayList<>();
 
-        serverReadLogs.add("sSeq\toVal\trID\trNum\n");
-        serverReadLogs.add("sSeq\toVal\twID\n");
+        serverReadLogs.add("sSeq\toVal\trID\trNum");
+        serverReadLogs.add("sSeq\toVal\twID");
+		Logger.logServer("read", "Readers");
+		Logger.logServer("read", "sSeq\toVal\trID\trNum");
+		Logger.logServer("write", "Writers");
+		Logger.logServer("write", "sSeq\toVal\twID");
     }
 
     @Override
@@ -95,8 +99,8 @@ public class SocketStrategy implements CommunicationStrategy {
         		String clientId = tokens[0];
         		String requestType = tokens[1];
         		String value = (tokens.length > 2 ? tokens[2] : null);
-        		
-        		System.out.println(request);
+
+				System.out.println("request = " + request);
         		
         		Message requestMessage ;
         		if (requestType.equalsIgnoreCase("read")) {
@@ -129,28 +133,27 @@ public class SocketStrategy implements CommunicationStrategy {
         		out.writeUTF(stringBuilder.toString());
         		System.out.println("Server sent the response to the client");
 				System.out.println("response = " + stringBuilder.toString());
+				System.out.println("====================================================");
 
 				// server logging
         		String[] logTokens = stringBuilder.toString().split("\t");
         		stringBuilder = new StringBuilder();
         		stringBuilder.append(logTokens[1]);
-        		stringBuilder.append("\t");
+        		stringBuilder.append("\t\t");
         		stringBuilder.append(logTokens[2]);
-        		stringBuilder.append("\t");
-        		stringBuilder.append(logTokens[0]);
+        		stringBuilder.append("\t\t");
+        		stringBuilder.append(clientId);
         		if (tokens[1].equalsIgnoreCase("read")) {
-        			stringBuilder.append("\t");
+        			stringBuilder.append("\t\t");
         			synchronized (currentReaders) {
-        				stringBuilder.append(currentReaders);
-        				currentReaders--;
-        			}
-        			stringBuilder.append("\n");
+						stringBuilder.append(currentReaders);
+						currentReaders--;
+					}
         			synchronized (serverReadLogs) {
         				serverReadLogs.add(stringBuilder.toString());
 						Logger.logServer("read", stringBuilder.toString());
         			}
         		} else if (tokens[1].equalsIgnoreCase("write")) {
-        			stringBuilder.append("\n");
         			synchronized (serverWriteLogs) {
         				serverWriteLogs.add(stringBuilder.toString());
 						Logger.logServer("write", stringBuilder.toString());
