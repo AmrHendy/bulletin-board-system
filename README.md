@@ -11,6 +11,7 @@ board and also to read the news from the bulletin board.
 **Configuration**
 
 > This program will read a configuration file from system.properties and start up the system accordingly
+> [JSCH library](https://mvnrepository.com/artifact/com.jcraft/jsch/0.1.52) is needed
 
 **Contributors**
 > * [Amr Hendy](https://github.com/AmrHendy)
