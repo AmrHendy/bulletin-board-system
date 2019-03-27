@@ -16,6 +16,7 @@ public class Start {
 
 	private static void spawnClients(){
 		int clientCount = Integer.valueOf(Configuration.getConfiguration().getConf("client-count"));
+		
 		for(int clientId = 0; clientId < clientCount; clientId++) {
 			String clientAddress = Configuration.getConfiguration().getConf("client-address-" + clientId);
 			// args = clientId, 'read'/'write', accessCount, strategyType, severAddress, serverPort, stubName

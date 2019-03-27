@@ -23,7 +23,7 @@ public class Logger {
         logMessage(filePath, message);
     }
 
-    private static void logMessage(String filePath, String message){
+    private synchronized static void logMessage(String filePath, String message){
         try{
             // remove extra new lines
             message = message.replace("\n", "");

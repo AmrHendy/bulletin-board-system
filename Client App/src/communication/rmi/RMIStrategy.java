@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import configuration.Configuration;
+import utilities.Logger;
 import communication.ExecutionStrategy;
 
 public class RMIStrategy implements ExecutionStrategy {
@@ -19,9 +20,10 @@ public class RMIStrategy implements ExecutionStrategy {
 		port = Integer.valueOf(Configuration.getConfiguration().getConf("server-port")) ;
 		serverIp = Configuration.getConfiguration().getConf("server-address") ;
 		stubName = Configuration.getConfiguration().getConf("stub-name") ;
-		clientId = Integer.valueOf(Configuration.getConfiguration().getConf("client-id")) ;
+		clientId = Integer.valueOf(Configuration.getConfiguration().getConf("client-id")) ;		
 		try {
 			this.handle = get_handle(port, stubName, serverIp);
+			System.out.println("client " + clientId +  " is connected to server : " +  serverIp + " on port : " + port + " on stub : " + stubName);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
@@ -31,7 +33,7 @@ public class RMIStrategy implements ExecutionStrategy {
 	public void read(){
 		try {
 			String msg = handle.read(clientId) ;
-			System.out.println("client recieved " + msg);
+			Logger.logClient(this.clientId, msg);
 		} catch (NullPointerException | RemoteException e) {
 			e.printStackTrace();
 		}
@@ -42,7 +44,7 @@ public class RMIStrategy implements ExecutionStrategy {
 	public void write(int data){
 		try {
 			String msg = handle.write(clientId, data) ;
-			System.out.println("client recieved " + msg);
+            Logger.logClient(this.clientId, msg);
 		} catch (RemoteException | NullPointerException e) {
 			e.printStackTrace();
 		}
