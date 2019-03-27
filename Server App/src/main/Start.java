@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 import configuration.Configuration;
 import server.Server;
+import ssh.SSHHandler;
 import utilities.FileHandler;
 import utilities.StrategyType;
 
@@ -16,7 +17,7 @@ public class Start {
 
 	private static void spawnClients(){
 		int clientCount = Integer.valueOf(Configuration.getConfiguration().getConf("client-count"));
-		
+		System.out.println(clientCount);
 		for(int clientId = 0; clientId < clientCount; clientId++) {
 			String clientAddress = Configuration.getConfiguration().getConf("client-address-" + clientId);
 			// args = clientId, 'read'/'write', accessCount, strategyType, severAddress, serverPort, stubName
@@ -29,38 +30,24 @@ public class Start {
 			String stubNameArg = Configuration.getConfiguration().getConf("stub-name");
 
 			try {
-				Process proc =Runtime.getRuntime().exec("ssh shaban@172.20.10.2 cd Desktop ;"
-						+ " java -jar client.jar "
-						+ clientIdArg + " "
-						+ clientTypeArg + " "
-						+ clientAccessCountArg + " "
-						+ clientStrategyTypeArg + " "
-						+ serverAddressArg + " "
-						+ serverPortArg + " "
-						+ stubNameArg);
+				
+				SSHHandler ssh = new SSHHandler();
+				
+				String command = "cd Desktop ;"
+								+ " java -jar client.jar "
+								+ clientIdArg + " "
+								+ clientTypeArg + " "
+								+ clientAccessCountArg + " "
+								+ clientStrategyTypeArg + " "
+								+ serverAddressArg + " "
+								+ serverPortArg + " "
+								+ stubNameArg;
 
-				BufferedReader stdInput = new BufferedReader(new
-						InputStreamReader(proc.getInputStream()));
-
-				BufferedReader stdError = new BufferedReader(new
-						InputStreamReader(proc.getErrorStream()));
-
-				// read the output from the command
-				/*
-				System.out.println("Here is the standard output of the command:\n");
-				String s = null;
-				while ((s = stdInput.readLine()) != null) {
-					System.out.println(s);
-				}
-				*/
-
-				// read any errors from the attempted command
-				/*
-				System.out.println("Here is the standard error of the command (if any):\n");
-				while ((s = stdError.readLine()) != null) {
-					System.out.println(s);
-				}
-				*/
+				
+				System.out.println("ssh on abdelrhman@" + clientAddress);
+				
+				
+				ssh.execCommand("username", clientAddress, 44444, "password", command);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -86,7 +73,7 @@ public class Start {
 		String fileName = args[0];
 		FileHandler.readConfig(fileName);
 		runServer();
-		//spawnClients();
+		spawnClients();
 	}
 
 }
