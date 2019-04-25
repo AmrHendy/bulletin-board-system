@@ -1,4 +1,4 @@
-# bulletin-board-system
+# Bulletin Board System
 
 **Description**
 
